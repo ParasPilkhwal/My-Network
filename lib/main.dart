@@ -13,7 +13,20 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'My Network App',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        brightness: Brightness.dark,
+        primarySwatch: Colors.green,
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Colors.green,
+          brightness: Brightness.dark,
+        ),
+        appBarTheme: const AppBarTheme(
+          backgroundColor: Colors.black,
+          foregroundColor: Colors.greenAccent,
+        ),
+        floatingActionButtonTheme: const FloatingActionButtonThemeData(
+          backgroundColor: Colors.greenAccent,
+          foregroundColor: Colors.black87,
+        ),
       ),
       home: const HomeScreen(),
     );
