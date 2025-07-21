@@ -42,10 +42,10 @@ class _PersonDetailScreenState extends State<PersonDetailScreen> {
     }
   }
 
-   void _launchEmail(String email) async {
+  void _launchEmail(String email) async {
     if (email.isNotEmpty) {
       final uri = Uri(scheme: 'mailto', path: email);
-       if (await canLaunchUrl(uri)) {
+      if (await canLaunchUrl(uri)) {
         await launchUrl(uri);
       } else {
         debugPrint('Could not launch $email');
@@ -124,45 +124,50 @@ class _PersonDetailScreenState extends State<PersonDetailScreen> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Card(
-          elevation: 4.0,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8.0),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: ListView(
-              children: [
-                _buildDetailRow('Relation:', _person.relation),
-                _buildDetailRow('How we met:', _person.howWeMet),
-                if (_person.dob != null && _person.dob!.isNotEmpty)
-                  _buildDetailRow('Date of Birth:', _person.dob!),
-                if (_person.gender != null && _person.gender!.isNotEmpty)
-                  _buildDetailRow('Gender:', _person.gender!),
-                if (_person.phoneNumbers.isNotEmpty)
-                  _buildPhoneNumbers(),
-                if (_person.address != null && _person.address!.isNotEmpty)
-                  _buildDetailRow('Address:', _person.address!),
-                if (_person.occupation != null && _person.occupation!.isNotEmpty)
-                  _buildDetailRow('Occupation:', _person.occupation!),
-                if (_person.company != null && _person.company!.isNotEmpty)
-                  _buildDetailRow('Company:', _person.company!),
-                if (_person.hobbies != null && _person.hobbies!.isNotEmpty)
-                  _buildDetailRow('Hobbies:', _person.hobbies!),
-                if (_person.description != null && _person.description!.isNotEmpty)
-                  _buildDetailRow('Description:', _person.description!),
-                const SizedBox(height: 20),
-                if (_person.gmail != null && _person.gmail!.isNotEmpty ||
-                    _person.instagram != null && _person.instagram!.isNotEmpty ||
-                    _person.twitter != null && _person.twitter!.isNotEmpty ||
-                    _person.linkedin != null && _person.linkedin!.isNotEmpty ||
-                    _person.github != null && _person.github!.isNotEmpty)
-                  const Text('Contact and Social Media Links:', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                const SizedBox(height: 10),
-                _buildLinksSection(),
-              ],
+        child: ListView(
+          children: [
+            Card(
+              elevation: 4.0,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8.0),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildDetailRow('Relation:', _person.relation),
+                    _buildDetailRow('How we met:', _person.howWeMet),
+                    if (_person.dob != null && _person.dob!.isNotEmpty)
+                      _buildDetailRow('Date of Birth:', _person.dob!),
+                    if (_person.gender != null && _person.gender!.isNotEmpty)
+                      _buildDetailRow('Gender:', _person.gender!),
+                    if (_person.phoneNumbers.isNotEmpty)
+                      _buildPhoneNumbers(),
+                    if (_person.address != null && _person.address!.isNotEmpty)
+                      _buildDetailRow('Address:', _person.address!),
+                    if (_person.occupation != null && _person.occupation!.isNotEmpty)
+                      _buildDetailRow('Occupation:', _person.occupation!),
+                    if (_person.company != null && _person.company!.isNotEmpty)
+                      _buildDetailRow('Company:', _person.company!),
+                    if (_person.hobbies != null && _person.hobbies!.isNotEmpty)
+                      _buildDetailRow('Hobbies:', _person.hobbies!),
+                    if (_person.description != null && _person.description!.isNotEmpty)
+                      _buildDetailRow('Description:', _person.description!),
+                  ],
+                ),
+              ),
             ),
-          ),
+            const SizedBox(height: 20),
+            if (_person.gmail != null && _person.gmail!.isNotEmpty ||
+                _person.instagram != null && _person.instagram!.isNotEmpty ||
+                _person.twitter != null && _person.twitter!.isNotEmpty ||
+                _person.linkedin != null && _person.linkedin!.isNotEmpty ||
+                _person.github != null && _person.github!.isNotEmpty)
+              const Text('Contact and Social Media Links', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 10),
+            _buildLinksSection(),
+          ],
         ),
       ),
     );
@@ -170,28 +175,51 @@ class _PersonDetailScreenState extends State<PersonDetailScreen> {
 
   Widget _buildDetailRow(String label, String value) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4.0),
-      child: Row(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('$label ', style: const TextStyle(fontWeight: FontWeight.bold)),
-          Expanded(child: Text(value)),
+          Text(
+            label,
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 16,
+            ),
+          ),
+          const SizedBox(height: 4.0),
+          Text(
+            value,
+            style: const TextStyle(fontSize: 16),
+          ),
         ],
       ),
     );
   }
 
-   Widget _buildPhoneNumbers() {
+  Widget _buildPhoneNumbers() {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4.0),
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('Phone Numbers:', style: TextStyle(fontWeight: FontWeight.bold)),
+          const Text(
+            'Phone Numbers:',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 16,
+            ),
+          ),
           const SizedBox(height: 4.0),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: _person.phoneNumbers.map((number) => Text(number)).toList(),
+            children: _person.phoneNumbers
+                .map(
+                  (number) => Text(
+                    number,
+                    style: const TextStyle(fontSize: 16),
+                  ),
+                )
+                .toList(),
           ),
         ],
       ),
@@ -200,41 +228,58 @@ class _PersonDetailScreenState extends State<PersonDetailScreen> {
 
   Widget _buildLinksSection() {
     return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
-         if (_person.gmail != null && _person.gmail!.isNotEmpty)
-           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 4.0),
-            child: GestureDetector(
-              onTap: () => _launchEmail(_person.gmail!),
-              child: Icon(Icons.email, color: Colors.red), // Gmail icon
-            ),
+        if (_person.gmail != null && _person.gmail!.isNotEmpty)
+          IconButton(
+            icon: const Icon(Icons.email, color: Colors.red, size: 30), // Gmail icon
+            onPressed: () => _launchEmail(_person.gmail!),
+            tooltip: 'Send Email',
           ),
         if (_person.instagram != null && _person.instagram!.isNotEmpty)
-          _buildSocialIcon('Instagram', _person.instagram, FontAwesomeIcons.instagram, const Color(0xFFE4405F)),
+          _buildSocialIcon(
+            'Instagram',
+            _person.instagram,
+            FontAwesomeIcons.instagram,
+            const Color(0xFFE4405F),
+          ),
         if (_person.twitter != null && _person.twitter!.isNotEmpty)
-          _buildSocialIcon('Twitter', _person.twitter, FontAwesomeIcons.twitter, const Color(0xFF1DA1F2)),
+          _buildSocialIcon(
+            'Twitter',
+            _person.twitter,
+            FontAwesomeIcons.twitter,
+            const Color(0xFF1DA1F2),
+          ),
         if (_person.linkedin != null && _person.linkedin!.isNotEmpty)
-          _buildSocialIcon('LinkedIn', _person.linkedin, FontAwesomeIcons.linkedinIn, const Color(0xFF0A66C2)),
+          _buildSocialIcon(
+            'LinkedIn',
+            _person.linkedin,
+            FontAwesomeIcons.linkedinIn,
+            const Color(0xFF0A66C2),
+          ),
         if (_person.github != null && _person.github!.isNotEmpty)
-          _buildSocialIcon('Github', _person.github, FontAwesomeIcons.github, Colors.white), // Changed Github icon color to white
+          _buildSocialIcon(
+            'Github',
+            _person.github,
+            FontAwesomeIcons.githubSquare,
+            Colors.blueGrey,
+          ), // Changed Github icon color to white
       ],
     );
   }
 
-
-  Widget _buildSocialIcon(String platform, String? url, IconData icon, Color color) {
+  Widget _buildSocialIcon(
+      String platform, String? url, IconData icon, Color color) {
     final isLinkProvided = url != null && url.isNotEmpty;
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 4.0),
-      child: IconButton(
-        icon:
-            FaIcon(
-          icon,
-          color: isLinkProvided ? color : Colors.grey,
-        ),
-        onPressed: isLinkProvided ? () => _launchURL(url!) : null,
-        tooltip: isLinkProvided ? 'Open $platform' : '$platform link not provided',
+    return IconButton(
+      icon:
+          FaIcon(
+        icon,
+        color: isLinkProvided ? color : Colors.grey,
+        size: 30,
       ),
+      onPressed: isLinkProvided ? () => _launchURL(url!) : null,
+      tooltip: isLinkProvided ? 'Open $platform' : '$platform link not provided',
     );
   }
 }

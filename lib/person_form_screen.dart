@@ -36,14 +36,14 @@ class _PersonFormScreenState extends State<PersonFormScreen> {
   late TextEditingController _gmailController;
 
 
-  String _selectedRelation = 'Friend';
+  String _selectedRelation = 'Friends';
   final List<String> _relations = [
-    'Friend',
-    'Teacher',
-    'Student',
-    'Relative',
+    'Friends',
+    'family member',
+    'Batchmates',
     'Colleague',
-    'Other',
+    'neighbour',
+    'others',
   ];
 
   String _selectedGender = 'Boy';
