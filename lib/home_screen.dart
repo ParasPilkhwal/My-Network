@@ -3,6 +3,19 @@ import 'person.dart';
 import 'person_form_screen.dart';
 import 'person_detail_screen.dart';
 
+enum SortOrder {
+  none,
+  nameAscending,
+  nameDescending,
+  createdDateAscending,
+  createdDateDescending,
+}
+
+enum SearchFilterCriteria {
+  name,
+  relation,
+}
+
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -29,6 +42,8 @@ class _HomeScreenState extends State<HomeScreen> {
       twitter: 'https://twitter.com/noobiekode',
       linkedin: 'https://www.linkedin.com/in/noobiekode/',
       github: 'https://github.com/noobiekode',
+      createdDate: DateTime(2023, 10, 26, 10, 0, 0),
+      lastModifiedDate: DateTime(2023, 11, 15, 12, 30, 0),
     ),
     Person(
       name: 'Himanshu Dubey',
@@ -44,9 +59,11 @@ class _HomeScreenState extends State<HomeScreen> {
       hobbies: 'Gaming, Photography',
       gmail: 'himanshu.dubey@example.com',
       instagram: 'https://www.instagram.com/writer_on_the_hillock/',
-      twitter: 'https://twitter.com/writer_on_the_hillock',
+      twitter: 'https://twitter.com/writer_on_the_hillock/',
       linkedin: 'https://www.linkedin.com/in/writer_on_the_hillock/',
       github: 'https://github.com/writer_on_the_hillock',
+      createdDate: DateTime(2023, 10, 25, 11, 0, 0),
+      lastModifiedDate: DateTime(2023, 11, 14, 13, 0, 0),
     ),
      Person(
             name: 'Chandra Shekhar Pandey',
@@ -62,9 +79,11 @@ class _HomeScreenState extends State<HomeScreen> {
             hobbies: 'Traveling, Cooking',
             gmail: 'chandra.shekhar.pandey@example.com',
             instagram: 'https://www.instagram.com/sheakherpandey10/',
-            twitter: 'https://twitter.com/sheakherpandey10',
+            twitter: 'https://twitter.com/sheakherpandey10/',
             linkedin: 'https://www.linkedin.com/in/sheakherpandey10/',
             github: 'https://github.com/sheakherpandey10',
+            createdDate: DateTime(2023, 10, 24, 12, 0, 0),
+            lastModifiedDate: DateTime(2023, 11, 13, 14, 30, 0),
           ),
           Person(
       name: 'Suman Devi',
@@ -83,6 +102,8 @@ class _HomeScreenState extends State<HomeScreen> {
       twitter: '',
       linkedin: '',
       github: '',
+      createdDate: DateTime(2023, 10, 23, 13, 0, 0),
+      lastModifiedDate: DateTime(2023, 11, 12, 15, 0, 0),
     ),
     Person(
       name: 'Anil Singh Rawat',
@@ -101,6 +122,8 @@ class _HomeScreenState extends State<HomeScreen> {
       twitter: '',
       linkedin: '',
       github: '',
+      createdDate: DateTime(2023, 10, 22, 14, 0, 0),
+      lastModifiedDate: DateTime(2023, 11, 11, 16, 30, 0),
     ),
      Person(
       name: 'Priya Sharma',
@@ -119,6 +142,8 @@ class _HomeScreenState extends State<HomeScreen> {
       twitter: '',
       linkedin: '',
       github: '',
+      createdDate: DateTime(2023, 10, 21, 15, 0, 0),
+      lastModifiedDate: DateTime(2023, 11, 10, 17, 0, 0),
     ),
     Person(
       name: 'Rahul Verma',
@@ -137,6 +162,8 @@ class _HomeScreenState extends State<HomeScreen> {
       twitter: '',
       linkedin: '',
       github: '',
+      createdDate: DateTime(2023, 10, 20, 16, 0, 0),
+      lastModifiedDate: DateTime(2023, 11, 9, 18, 30, 0),
     ),
     Person(
       name: 'Rajesh Gupta',
@@ -155,6 +182,8 @@ class _HomeScreenState extends State<HomeScreen> {
       twitter: '',
       linkedin: '',
       github: '',
+      createdDate: DateTime(2023, 10, 19, 17, 0, 0),
+      lastModifiedDate: DateTime(2023, 11, 8, 19, 0, 0),
     ),
      Person(
       name: 'Deepa Negi',
@@ -173,6 +202,8 @@ class _HomeScreenState extends State<HomeScreen> {
       twitter: '',
       linkedin: '',
       github: '',
+      createdDate: DateTime(2023, 10, 18, 18, 0, 0),
+      lastModifiedDate: DateTime(2023, 11, 7, 20, 30, 0),
     ),
     Person(
       name: 'Manoj Joshi',
@@ -190,7 +221,9 @@ class _HomeScreenState extends State<HomeScreen> {
       instagram: '',
       twitter: '',
       linkedin: '',
-      github: '',
+       github: '',
+       createdDate: DateTime(2023, 10, 17, 19, 0, 0),
+       lastModifiedDate: DateTime(2023, 11, 6, 21, 0, 0),
     ),
     Person(
       name: 'Shanti Devi',
@@ -209,6 +242,8 @@ class _HomeScreenState extends State<HomeScreen> {
       twitter: '',
       linkedin: '',
        github: '',
+       createdDate: DateTime(2023, 10, 16, 20, 0, 0),
+       lastModifiedDate: DateTime(2023, 11, 5, 22, 30, 0),
     ),
     Person(
       name: 'Unknown Person',
@@ -227,6 +262,8 @@ class _HomeScreenState extends State<HomeScreen> {
       twitter: '',
       linkedin: '',
       github: '',
+      createdDate: DateTime(2023, 10, 15, 21, 0, 0),
+      lastModifiedDate: DateTime(2023, 11, 4, 23, 0, 0),
     ),
      Person(
       name: 'Another Contact',
@@ -245,18 +282,32 @@ class _HomeScreenState extends State<HomeScreen> {
       twitter: '',
       linkedin: '',
       github: '',
+      createdDate: DateTime(2023, 10, 14, 22, 0, 0),
+      lastModifiedDate: DateTime(2023, 11, 3, 23, 59, 59),
     ),
   ];
 
+  String? _selectedRelationFilter;
+   SortOrder _sortOrder = SortOrder.none;
+
   void _addPerson(Person person) {
     setState(() {
-      _people.add(person);
+      // When adding a new person, set both createdDate and lastModifiedDate to now
+      _people.add(person.copyWith(
+        createdDate: DateTime.now(),
+        lastModifiedDate: DateTime.now(),
+      ));
     });
   }
 
   void _updatePerson(int index, Person person) {
     setState(() {
-      _people[index] = person;
+      // Create a new Person object with updated details and original createdDate
+      final updatedPerson = person.copyWith(
+        createdDate: _people[index].createdDate, // Keep the original createdDate
+        lastModifiedDate: DateTime.now(), // Update lastModifiedDate
+      );
+      _people[index] = updatedPerson;
     });
   }
 
@@ -266,27 +317,187 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
+  List<Person> get _filteredPeople {
+    List<Person> filteredList = _people.toList();
+    if (_selectedRelationFilter != null) {
+      filteredList = filteredList.where((person) => person.relation == _selectedRelationFilter).toList();
+    }
+
+    if (_sortOrder == SortOrder.nameAscending) {
+      filteredList.sort((a, b) => a.name.compareTo(b.name));
+    } else if (_sortOrder == SortOrder.nameDescending) {
+      filteredList.sort((a, b) => b.name.compareTo(a.name));
+    } else if (_sortOrder == SortOrder.createdDateAscending) {
+       filteredList.sort((a, b) => a.createdDate.compareTo(b.createdDate));
+    } else if (_sortOrder == SortOrder.createdDateDescending) {
+       filteredList.sort((a, b) => b.createdDate.compareTo(a.createdDate));
+    }
+
+    return filteredList;
+  }
+
+   void _showSortOptionsDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Sort By'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                title: const Text('Name (A-Z)'),
+                onTap: () {
+                  setState(() {
+                    _sortOrder = SortOrder.nameAscending;
+                  });
+                  Navigator.of(context).pop();
+                },
+              ),
+              ListTile(
+                title: const Text('Name (Z-A)'),
+                onTap: () {
+                  setState(() {
+                    _sortOrder = SortOrder.nameDescending;
+                  });
+                  Navigator.of(context).pop();
+                },
+              ),
+              ListTile(
+                title: const Text('Created Date (Oldest First)'),
+                onTap: () {
+                  setState(() {
+                    _sortOrder = SortOrder.createdDateAscending;
+                  });
+                  Navigator.of(context).pop();
+                },
+              ),
+               ListTile(
+                title: const Text('Created Date (Newest First)'),
+                onTap: () {
+                  setState(() {
+                    _sortOrder = SortOrder.createdDateDescending;
+                  });
+                  Navigator.of(context).pop();
+                },
+              ),
+               ListTile(
+                title: const Text('None'),
+                onTap: () {
+                  setState(() {
+                    _sortOrder = SortOrder.none;
+                  });
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  IconData _getSortIcon() {
+    if (_sortOrder == SortOrder.nameAscending) {
+      return Icons.sort_by_alpha;
+    } else if (_sortOrder == SortOrder.nameDescending) {
+      return Icons.sort_by_alpha;
+    } else if (_sortOrder == SortOrder.createdDateAscending || _sortOrder == SortOrder.createdDateDescending) {
+      return Icons.calendar_today;
+    } else {
+      return Icons.sort;
+    }
+  }
+
+   String _getSortTooltip() {
+    if (_sortOrder == SortOrder.nameAscending) {
+      return 'Sorted by Name (A-Z)';
+    } else if (_sortOrder == SortOrder.nameDescending) {
+      return 'Sorted by Name (Z-A)';
+    } else if (_sortOrder == SortOrder.createdDateAscending) {
+      return 'Sorted by Created Date (Oldest First)';
+    } else if (_sortOrder == SortOrder.createdDateDescending) {
+      return 'Sorted by Created Date (Newest First)';
+    } else {
+      return 'Sort';
+    }
+  }
+
+  void _showRelationFilterDialog() {
+    // Get all unique relations from the _people list
+    final uniqueRelations = _people.map((person) => person.relation).toSet().toList();
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Filter by Relation'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: [
+                // Option to show all
+                ListTile(
+                  title: const Text('Show All'),
+                  onTap: () {
+                    setState(() {
+                      _selectedRelationFilter = null; // Clear the filter
+                    });
+                    Navigator.of(context).pop();
+                  },
+                ),
+                // List of unique relations as filter options
+                ...uniqueRelations.map((relation) {
+                  return ListTile(
+                    title: Text(relation),
+                    onTap: () {
+                      setState(() {
+                        _selectedRelationFilter = relation; // Set the selected filter
+                      });
+                      Navigator.of(context).pop();
+                    },
+                  );
+                }).toList(),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+     final uniqueRelations = _people.map((person) => person.relation).toSet().toList(); // Get unique relations here
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('My Networks'),
         actions: [
+           IconButton(
+            icon: Icon(_getSortIcon()),
+            onPressed: _showSortOptionsDialog,
+            tooltip: _getSortTooltip(),
+          ),
+          // Combined filter and search functionality in one icon/widget
           IconButton(
             icon: const Icon(Icons.search),
             onPressed: () {
               showSearch<void>(
                 context: context,
-                delegate: PersonSearchDelegate(_people),
+                delegate: PersonSearchDelegate(
+                  _people,
+                  uniqueRelations,
+                ),
               );
             },
+             tooltip: 'Search or Filter',
           ),
         ],
       ),
       body: ListView.builder(
-        itemCount: _people.length,
+        itemCount: _filteredPeople.length,
         itemBuilder: (context, index) {
-          final person = _people[index];
+          final person = _filteredPeople[index];
           return Card(
             color: Colors.green[900], // Set card background color to green
             margin: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
@@ -299,14 +510,14 @@ class _HomeScreenState extends State<HomeScreen> {
                   MaterialPageRoute(
                     builder: (context) => PersonDetailScreen(
                       person: person,
-                      index: index,
+                      index: _people.indexOf(person), // Pass the index from the original list
                       onUpdate: _updatePerson,
                       onDelete: _deletePerson,
                     ),
                   ),
                 );
                 if (updatedPerson != null && updatedPerson is Person) {
-                  _updatePerson(index, updatedPerson);
+                  _updatePerson(_people.indexOf(updatedPerson), updatedPerson);
                 }
               },
             ),
@@ -332,17 +543,36 @@ class _HomeScreenState extends State<HomeScreen> {
 // Define the SearchDelegate
 class PersonSearchDelegate extends SearchDelegate<void> {
   final List<Person> people;
+  final List<String> uniqueRelations; // Receive unique relations
 
-  PersonSearchDelegate(this.people);
+  // Add variables to hold the selected criteria and relation filter
+  SearchFilterCriteria _selectedCriteria = SearchFilterCriteria.name; // State for selected criteria
+  String? _selectedRelationFilter; // State for relation filter within delegate
+
+  PersonSearchDelegate(this.people, this.uniqueRelations);
 
   @override
-  List<Widget> buildActions(BuildContext context) {
+  ThemeData appBarTheme(BuildContext context) {
+    final theme = Theme.of(context);
+    return theme.copyWith(
+      // Customize the app bar theme for the search page if needed
+    );
+  }
+
+  @override
+  List<Widget>? buildActions(BuildContext context) {
     // Actions for the search bar (e.g., clear query button)
     return [
       IconButton(
         icon: const Icon(Icons.clear),
         onPressed: () {
           query = '';
+           // Clear the selected relation filter as well if applicable
+          if (_selectedCriteria == SearchFilterCriteria.relation) {
+             _selectedRelationFilter = null;
+          }
+           // Manually trigger a rebuild of the suggestions
+           showSuggestions(context);
         },
       ),
     ];
@@ -350,7 +580,7 @@ class PersonSearchDelegate extends SearchDelegate<void> {
 
   @override
   Widget buildLeading(BuildContext context) {
-    // Leading icon (e.g., back button)
+    // Leading icon (e.e., back button)
     return IconButton(
       icon: const Icon(Icons.arrow_back),
       onPressed: () {
@@ -361,7 +591,7 @@ class PersonSearchDelegate extends SearchDelegate<void> {
 
   @override
   Widget buildResults(BuildContext context) {
-    // Display search results based on the query
+    // Display search results based on the query and selected criteria
     return _buildSearchResults(context);
   }
 
@@ -372,14 +602,20 @@ class PersonSearchDelegate extends SearchDelegate<void> {
   }
 
  @override
-  String get searchFieldLabel => 'Search by Name / Description';
+  String get searchFieldLabel => _selectedCriteria == SearchFilterCriteria.name ? 'Name / Description / Relation' : 'Select Relation';
 
   Widget _buildSearchResults(BuildContext context) {
     final results = people.where((person) {
-      // Implement your search filtering logic here
-      // For example, filter by name or relation
-      return person.name.toLowerCase().contains(query.toLowerCase()) ||
-             (person.description != null && person.description!.toLowerCase().contains(query.toLowerCase()));
+      // Include relation in the search criteria for name/description search
+      if (_selectedCriteria == SearchFilterCriteria.name) {
+        return person.name.toLowerCase().contains(query.toLowerCase()) ||
+               (person.description != null && person.description!.toLowerCase().contains(query.toLowerCase())) ||
+               person.relation.toLowerCase().contains(query.toLowerCase());
+      } else if (_selectedCriteria == SearchFilterCriteria.relation) {
+        // Filter by selected relation (this part remains the same)
+        return _selectedRelationFilter == null || person.relation == _selectedRelationFilter;
+      }
+      return false;
     }).toList();
 
     return ListView.builder(
@@ -405,12 +641,92 @@ class PersonSearchDelegate extends SearchDelegate<void> {
                     ),
                   ),
                 );
-                // Close the search bar after navigating
-                 close(context, null);
             },
           ),
         );
       },
     );
+  }
+
+   @override
+  PreferredSizeWidget buildAppBar(BuildContext context) {
+    return AppBar(
+      leading: buildLeading(context),
+      title: Row(
+        children: [
+          // Dropdown for selecting criteria
+          DropdownButton<SearchFilterCriteria>(
+            value: _selectedCriteria,
+            items: const [
+              DropdownMenuItem(
+                value: SearchFilterCriteria.name,
+                child: Text('Name'),
+              ),
+              DropdownMenuItem(
+                value: SearchFilterCriteria.relation,
+                child: Text('Relation'),
+              ),
+            ],
+            onChanged: (newValue) {
+              if (newValue != null) {
+                 _selectedCriteria = newValue;
+                 // Clear the query when switching criteria
+                query = '';
+                 // Clear the selected relation filter when switching to name search
+                if (_selectedCriteria == SearchFilterCriteria.name) {
+                  _selectedRelationFilter = null;
+                }
+                 // Manually trigger a rebuild of the suggestions to update the input field/dropdown
+               showSuggestions(context);
+              }
+            },
+          ),
+          const SizedBox(width: 8.0), // Add spacing between dropdown and input field/dropdown
+          Expanded(
+            child: _selectedCriteria == SearchFilterCriteria.name
+                ? TextField(
+                    controller: TextEditingController(text: query), // Use a new controller with the current query
+                    decoration: InputDecoration(
+                      hintText: searchFieldLabel,
+                      border: InputBorder.none,
+                    ),
+                    textInputAction: textInputAction,
+                     // Update the query as the user types
+                    onChanged: (value) {
+                      query = value;
+                      showSuggestions(context); // Show suggestions as the user types
+                    },
+                  )
+                : DropdownButton<String?>(
+                    value: _selectedRelationFilter,
+                    hint: Text(searchFieldLabel),
+                    items: ['Show All', ...uniqueRelations]
+                        .map((relation) => DropdownMenuItem(
+                              value: relation == 'Show All' ? null : relation,
+                              child: Text(relation),
+                            ))
+                        .toList(),
+                    onChanged: (newValue) {
+                      _selectedRelationFilter = newValue;
+                       // Manually trigger a rebuild of the suggestions to update the results
+                      showSuggestions(context);
+                    },
+                  ),
+          ),
+        ],
+      ),
+      actions: buildActions(context),
+    );
+  }
+
+  // Override this to trigger a rebuild of the suggestions when state changes
+  @override
+  void showSuggestions(BuildContext context) {
+    super.showSuggestions(context);
+  }
+
+  @override
+  void showResults(BuildContext context) {
+    super.showResults(context);
   }
 }

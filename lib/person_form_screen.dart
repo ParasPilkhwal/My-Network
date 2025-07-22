@@ -6,12 +6,14 @@ class PersonFormScreen extends StatefulWidget {
   final Function(Person) onSave;
   final Person? person;
   final int? index;
+  final DateTime? originalCreatedDate; // Receive original created date
 
   const PersonFormScreen({
     super.key,
     required this.onSave,
     this.person,
     this.index,
+    this.originalCreatedDate, // Add to constructor
   });
 
   @override
@@ -36,7 +38,7 @@ class _PersonFormScreenState extends State<PersonFormScreen> {
   late TextEditingController _gmailController;
 
 
-  String _selectedRelation = 'Friends';
+  String? _selectedRelation;
   final List<String> _relations = [
     'Friends',
     'family member',
@@ -144,7 +146,7 @@ class _PersonFormScreenState extends State<PersonFormScreen> {
     if (_formKey.currentState!.validate()) {
       final newPerson = Person(
         name: _nameController.text,
-        relation: _selectedRelation,
+        relation: _selectedRelation!,
         howWeMet: _howWeMetController.text,
         description: _descriptionController.text,
         dob: _dobController.text,
@@ -160,12 +162,14 @@ class _PersonFormScreenState extends State<PersonFormScreen> {
         linkedin: _linkedinController.text,
         github: _githubController.text,
          reminders: widget.person?.reminders ?? [], // Preserve existing reminders for now
+         createdDate: widget.originalCreatedDate ?? DateTime.now(), // Use original or set to now
+         lastModifiedDate: DateTime.now(), // Always update last modified date on save
       );
       // If editing an existing person, pop with the updated person
       if (widget.person != null && widget.index != null) {
         // Instead of popping with a result, we'll just pop.
         // The detail screen will handle updating its state.
-        widget.onSave(newPerson); // Call onSave to update in HomeScreen's list
+        // widget.onSave(newPerson); // Removed this line
         Navigator.pop(context, newPerson); // Pop with the updated person
 
       } else {
@@ -201,6 +205,7 @@ class _PersonFormScreenState extends State<PersonFormScreen> {
               DropdownButtonFormField<String>(
                 value: _selectedRelation,
                 decoration: const InputDecoration(labelText: 'Relation*'),
+                 hint: const Text('Select Relation'), // Add a hint
                 items: _relations.map((String relation) {
                   return DropdownMenuItem<String>(
                     value: relation,
@@ -213,6 +218,12 @@ class _PersonFormScreenState extends State<PersonFormScreen> {
                       _selectedRelation = newValue;
                     });
                   }
+                },
+                 validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please select a relation';
+                  }
+                  return null;
                 },
               ),
               TextFormField(

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:intl/intl.dart'; // Import for date formatting
 import 'person.dart';
 import 'person_form_screen.dart';
 
@@ -90,6 +91,11 @@ class _PersonDetailScreenState extends State<PersonDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // Format dates for display
+    final dateFormatter = DateFormat('yyyy-MM-dd HH:mm');
+    final createdDateFormatted = dateFormatter.format(_person.createdDate);
+    final lastModifiedDateFormatted = dateFormatter.format(_person.lastModifiedDate);
+
     return Scaffold(
       appBar: AppBar(
         title: Text(_person.name, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
@@ -101,9 +107,14 @@ class _PersonDetailScreenState extends State<PersonDetailScreen> {
                 context,
                 MaterialPageRoute(
                   builder: (context) => PersonFormScreen(
-                    onSave: (updatedPerson) {},
+                    onSave: (updatedPersonData) {
+                      // This onSave is now handled in PersonDetailScreen to control the pop
+                      // and pass the original createdDate.
+                    },
                     person: _person,
                     index: widget.index,
+                    originalCreatedDate: _person.createdDate, // Pass the original createdDate
+
                   ),
                 ),
               );
@@ -111,7 +122,7 @@ class _PersonDetailScreenState extends State<PersonDetailScreen> {
                 setState(() {
                   _person = updatedPerson;
                 });
-                widget.onUpdate(widget.index, updatedPerson);
+                widget.onUpdate(widget.index, updatedPerson); // Call the onUpdate callback in HomeScreen
               }
             },
           ),
@@ -167,6 +178,19 @@ class _PersonDetailScreenState extends State<PersonDetailScreen> {
               const Text('Contact and Social Media Links', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             const SizedBox(height: 10),
             _buildLinksSection(),
+            const SizedBox(height: 20), // Add spacing before dates
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: _buildDateRow('Created:', createdDateFormatted),
+                ),
+                const SizedBox(width: 16), // Add spacing between the two date fields
+                Expanded(
+                  child: _buildDateRow('Modified:', lastModifiedDateFormatted),
+                ),
+              ],
+            ),
           ],
         ),
       ),
@@ -195,6 +219,27 @@ class _PersonDetailScreenState extends State<PersonDetailScreen> {
       ),
     );
   }
+
+  Widget _buildDateRow(String label, String value) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: const TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 16,
+          ),
+        ),
+        const SizedBox(height: 4.0),
+        Text(
+          value,
+          style: const TextStyle(fontSize: 16),
+        ),
+      ],
+    );
+  }
+
 
   Widget _buildPhoneNumbers() {
     return Padding(
