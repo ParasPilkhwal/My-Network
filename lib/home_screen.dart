@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'person.dart';
 import 'person_form_screen.dart';
 import 'person_detail_screen.dart';
+import 'theme_provider.dart'; // Import the ThemeProvider
 
 enum SortOrder {
   none,
@@ -468,18 +470,13 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
      final uniqueRelations = _people.map((person) => person.relation).toSet().toList(); // Get unique relations here
+     final themeProvider = Provider.of<ThemeProvider>(context); // Access ThemeProvider
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('My Networks'),
         actions: [
            IconButton(
-            icon: Icon(_getSortIcon()),
-            onPressed: _showSortOptionsDialog,
-            tooltip: _getSortTooltip(),
-          ),
-          // Combined filter and search functionality in one icon/widget
-          IconButton(
             icon: const Icon(Icons.search),
             onPressed: () {
               showSearch<void>(
@@ -492,6 +489,28 @@ class _HomeScreenState extends State<HomeScreen> {
             },
              tooltip: 'Search or Filter',
           ),
+           PopupMenuButton<String>(
+            icon: const Icon(Icons.more_vert),
+            onSelected: (String result) {
+              if (result == 'sort') {
+                _showSortOptionsDialog();
+              } else if (result == 'toggleTheme') {
+                 // Toggle theme using the ThemeProvider
+                 themeProvider.toggleTheme(themeProvider.themeMode == ThemeMode.dark ? ThemeMode.light : ThemeMode.dark);
+              }
+            },
+            itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+              const PopupMenuItem<String>(
+                value: 'sort',
+                child: Text('Sort'),
+              ),
+              PopupMenuItem<String>(
+                value: 'toggleTheme',
+                 // Display the correct theme toggle text
+                child: Text(themeProvider.themeMode == ThemeMode.dark ? 'Switch to Light Mode' : 'Switch to Dark Mode'),
+              ),
+            ],
+          ),
         ],
       ),
       body: ListView.builder(
@@ -500,10 +519,11 @@ class _HomeScreenState extends State<HomeScreen> {
           final person = _filteredPeople[index];
           return Card(
             color: Colors.green[900], // Set card background color to green
-            margin: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+            margin: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 6.0), // Increased margin
             child: ListTile(
-              title: Text(person.name, style: TextStyle(color: Colors.white)),
-              subtitle: Text('${person.relation} - ${person.howWeMet}', style: TextStyle(color: Colors.white70)),
+              contentPadding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0), // Increased padding
+              title: Text(person.name, style: TextStyle(color: Colors.white, fontSize: 18.0)), // Increased font size
+              subtitle: Text('${person.relation} - ${person.howWeMet}', style: TextStyle(color: Colors.white70, fontSize: 14.0)), // Increased font size
               onTap: () async {
                 final updatedPerson = await Navigator.push(
                   context,
