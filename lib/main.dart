@@ -8,10 +8,13 @@ import 'profile_setting_screen.dart';
 import 'screens/login_screen.dart';
 import 'screens/registration_screen.dart';
 import 'services/auth_service.dart';
+import 'firebase_options.dart'; // Import firebase_options.dart
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform, // Add this line
+  );
   runApp(const MyApp());
 }
 

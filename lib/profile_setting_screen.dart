@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:go_router/go_router.dart'; // Import go_router
 import 'theme_provider.dart';
+import 'services/auth_service.dart'; // Import AuthService
 
 class ProfileSettingScreen extends StatelessWidget {
   const ProfileSettingScreen({super.key});
@@ -8,6 +10,7 @@ class ProfileSettingScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
+    final authService = Provider.of<AuthService>(context, listen: false); // Get AuthService
 
     return Scaffold(
       appBar: AppBar(
@@ -24,6 +27,20 @@ class ProfileSettingScreen extends StatelessWidget {
                 label: 'Theme',
                 onTap: () {
                   _showThemePickerDialog(context, themeProvider);
+                },
+              ),
+            ],
+          ),
+          _buildSettingsSection(
+            context,
+            title: 'Account',
+            items: [
+              _buildSettingsItem(
+                context,
+                label: 'Logout',
+                onTap: () async {
+                  await authService.signOut(); // Call signOut
+                  context.go('/login'); // Navigate to login
                 },
               ),
             ],
