@@ -1,23 +1,66 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:go_router/go_router.dart';
 import 'home_screen.dart';
 import 'theme_provider.dart';
-import 'profile_setting_screen.dart'; // Import the ProfileSettingScreen
+import 'profile_setting_screen.dart';
+import 'screens/login_screen.dart';
+import 'screens/registration_screen.dart';
+import 'services/auth_service.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   runApp(const MyApp());
 }
+
+final _router = GoRouter(
+  routes: [
+    GoRoute(
+      path: '/',
+      redirect: (context, state) {
+        final isloggedIn = Provider.of<AuthService>(context).currentUser != null;
+        if (isloggedIn) {
+          return '/home';
+        } else {
+          return '/login';
+        }
+      },
+    ),
+    GoRoute(
+      path: '/login',
+      builder: (context, state) => const LoginScreen(),
+    ),
+    GoRoute(
+      path: '/register',
+      builder: (context, state) => const RegistrationScreen(),
+    ),
+    GoRoute(
+      path: '/home',
+      builder: (context, state) => const MyNetworkApp(), // Your main app content
+    ),
+     GoRoute(
+      path: '/profileSettings',
+      builder: (context, state) => const ProfileSettingScreen(), // Your profile setting screen
+    ),
+  ],
+);
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => ThemeProvider(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context) => ThemeProvider()),
+        Provider(create: (context) => AuthService()), // Provide AuthService
+      ],
       child: Consumer<ThemeProvider>(
         builder: (context, themeProvider, child) {
-          return MaterialApp(
+          return MaterialApp.router(
+            routerConfig: _router,
             title: 'My Network App',
             theme: ThemeData(
               brightness: Brightness.light,
@@ -52,7 +95,6 @@ class MyApp extends StatelessWidget {
               ),
             ),
             themeMode: themeProvider.themeMode,
-            home: const MyNetworkApp(),
           );
         },
       ),
@@ -72,7 +114,7 @@ class _MyNetworkAppState extends State<MyNetworkApp> {
 
   static const List<Widget> _widgetOptions = <Widget>[
     HomeScreen(),
-    ProfileSettingScreen(), // Use the ProfileSettingScreen widget
+    ProfileSettingScreen(),
   ];
 
   void _onItemTapped(int index) {
